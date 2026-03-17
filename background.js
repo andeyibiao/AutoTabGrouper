@@ -47,39 +47,37 @@ async function checkAndGroup(windowId) {
 
   // 遍历每个域名的标签页
   for (const [domain, tabList] of domainToTabs.entries()) {
-    if (tabList.length > 1) {
-      // 检查这些标签页是否已经在同一个组
-      const groupIds = new Set(
-        tabList
-          .map(t => t.groupId)
-          .filter(id => id !== chrome.tabGroups.TAB_GROUP_ID_NONE)
-      );
+    // 检查这些标签页是否已经在同一个组
+    const groupIds = new Set(
+      tabList
+        .map(t => t.groupId)
+        .filter(id => id !== chrome.tabGroups.TAB_GROUP_ID_NONE)
+    );
 
-      let targetGroupId;
-      if (groupIds.size === 1) {
-        // 全都在一个或部分在一个已存在的组里面
-        targetGroupId = groupIds.values().next().value;
-      } else if (groupIds.size > 1) {
-        // 如果分散在多个组中，可以把它们都合并到第一个组里
-        targetGroupId = groupIds.values().next().value;
-      }
-
-      const tabIds = tabList.map(t => t.id);
-
-      // 将所有属于这个域名的 tabs 放进对应目标组 (如果 targetGroupId undefined，会自动创建新组)
-      const groupOptions = { tabIds: tabIds };
-      if (targetGroupId !== undefined) {
-        groupOptions.groupId = targetGroupId;
-      }
-      targetGroupId = await chrome.tabs.group(groupOptions);
-
-      // 更新组名与组颜色
-      const color = getColorForDomain(domain);
-      await chrome.tabGroups.update(targetGroupId, {
-        title: domain,
-        color: color
-      });
+    let targetGroupId;
+    if (groupIds.size === 1) {
+      // 全都在一个或部分在一个已存在的组里面
+      targetGroupId = groupIds.values().next().value;
+    } else if (groupIds.size > 1) {
+      // 如果分散在多个组中，可以把它们都合并到第一个组里
+      targetGroupId = groupIds.values().next().value;
     }
+
+    const tabIds = tabList.map(t => t.id);
+
+    // 将所有属于这个域名的 tabs 放进对应目标组 (如果 targetGroupId undefined，会自动创建新组)
+    const groupOptions = { tabIds: tabIds };
+    if (targetGroupId !== undefined) {
+      groupOptions.groupId = targetGroupId;
+    }
+    targetGroupId = await chrome.tabs.group(groupOptions);
+
+    // 更新组名与组颜色
+    const color = getColorForDomain(domain);
+    await chrome.tabGroups.update(targetGroupId, {
+      title: domain,
+      color: color
+    });
   }
 }
 
