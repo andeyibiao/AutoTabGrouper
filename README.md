@@ -8,6 +8,9 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
+## 📸 运行效果展示
+![标签页自动分组截图](images/tabs.jpg)
+
 ## 🌟 特性功能
 
 - 🎯 **全自动分组**：无论是新开页面还是在原页面跳转，只要域名发生变动，就会实时被归入相应的标签组。
