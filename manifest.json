@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Auto Tab Grouper",
+  "version": "1.0",
+  "description": "自动检测标签页域名，发现多个相同域名的标签页时将其自动原生归组，并分配颜色与命名。",
+  "permissions": [
+    "tabs",
+    "tabGroups"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
+}
