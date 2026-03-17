@@ -79,8 +79,13 @@ async function checkAndGroup(windowId) {
 
     // 更新组名与组颜色
     const color = getColorForDomain(domain);
+    
+    // 缩短展示名字：提取域名的第一段
+    // 例如：github.com -> github, calendar.google.com -> calendar
+    let shortTitle = domain.split('.')[0] || domain;
+
     await chrome.tabGroups.update(targetGroupId, {
-      title: domain,
+      title: shortTitle,
       color: color
     });
   }
