@@ -24,7 +24,7 @@
 
 1. 下载或 Clone 本仓库到本地：
    ```bash
-   git clone https://github.com/your-username/AutoTabGrouper.git
+   git clone https://github.com/andeyibiao/AutoTabGrouper.git
    ```
 2. 打开 Chrome 浏览器，在地址栏输入 `chrome://extensions/` 并回车。
 3. 在页面右上角，开启 **“开发者模式” (Developer mode)**。
