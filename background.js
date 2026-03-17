@@ -31,13 +31,18 @@ async function checkAndGroup(windowId) {
   
   // 按域名分类
   const domainToTabs = new Map();
+  const ungroupedTabIds = [];
   
   tabs.forEach(tab => {
     if (!tab.url || tab.url.startsWith('chrome://') || tab.url.startsWith('about:') || tab.url.startsWith('edge://')) {
+      ungroupedTabIds.push(tab.id);
       return;
     }
     const domain = getDomain(tab.url);
-    if (!domain) return;
+    if (!domain) {
+      ungroupedTabIds.push(tab.id);
+      return;
+    }
     
     if (!domainToTabs.has(domain)) {
       domainToTabs.set(domain, []);
@@ -78,6 +83,15 @@ async function checkAndGroup(windowId) {
       title: domain,
       color: color
     });
+  }
+
+  // 将没有被分组的标签页放到最下面（最右侧）
+  if (ungroupedTabIds.length > 0) {
+    try {
+      await chrome.tabs.move(ungroupedTabIds, { index: -1 });
+    } catch (e) {
+      console.error('Failed to move ungrouped tabs:', e);
+    }
   }
 }
 
