@@ -95,3 +95,11 @@ chrome.tabs.onCreated.addListener((tab) => {
       checkAndGroup(tab.windowId);
   }
 });
+
+// 当扩展第一次安装、更新或 Chrome 启动时，自动对现有标签页执行一次分组
+chrome.runtime.onInstalled.addListener(async () => {
+  const windows = await chrome.windows.getAll({ populate: false });
+  for (const win of windows) {
+    await checkAndGroup(win.id);
+  }
+});
