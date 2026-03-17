@@ -1,5 +1,9 @@
 # Auto Tab Grouper
 
+<p align="center">
+  <img src="icon.png" width="128" alt="Auto Tab Grouper Logo">
+</p>
+
 > 一个优雅的 Chrome 扩展，自动将拥有相同域名的标签页归类到同一个原生的“标签组”中，帮助您保持浏览器的整洁。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
