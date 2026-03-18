@@ -32,6 +32,7 @@ async function checkAndGroup(windowId) {
   // 按域名分类
   const domainToTabs = new Map();
   const ungroupedTabIds = [];
+  const groupDomains = new Map();
   
   tabs.forEach(tab => {
     if (!tab.url || tab.url.startsWith('chrome://') || tab.url.startsWith('about:') || tab.url.startsWith('edge://')) {
@@ -44,6 +45,14 @@ async function checkAndGroup(windowId) {
       return;
     }
     
+    // 记录被占用的 groupId 及其包含的域名成分
+    if (tab.groupId !== chrome.tabGroups.TAB_GROUP_ID_NONE) {
+      if (!groupDomains.has(tab.groupId)) {
+        groupDomains.set(tab.groupId, new Set());
+      }
+      groupDomains.get(tab.groupId).add(domain);
+    }
+
     if (!domainToTabs.has(domain)) {
       domainToTabs.set(domain, []);
     }
@@ -54,20 +63,22 @@ async function checkAndGroup(windowId) {
 
   // 遍历每个域名的标签页
   for (const [domain, tabList] of domainToTabs.entries()) {
-    // 检查这些标签页是否已经在同一个组
-    const groupIds = new Set(
-      tabList
-        .map(t => t.groupId)
-        .filter(id => id !== chrome.tabGroups.TAB_GROUP_ID_NONE)
-    );
+    // 检查这些标签页是否已经在同一个纯净的组内
+    const validGroupIds = new Set();
+    tabList.forEach(t => {
+      const gId = t.groupId;
+      if (gId !== chrome.tabGroups.TAB_GROUP_ID_NONE && groupDomains.has(gId)) {
+        const domainsInGroup = groupDomains.get(gId);
+        // 只有当该原有的组内“仅有”当前处理的这一种域名时，才可以安全复用它
+        if (domainsInGroup.size === 1 && domainsInGroup.has(domain)) {
+          validGroupIds.add(gId);
+        }
+      }
+    });
 
     let targetGroupId;
-    if (groupIds.size === 1) {
-      // 全都在一个或部分在一个已存在的组里面
-      targetGroupId = groupIds.values().next().value;
-    } else if (groupIds.size > 1) {
-      // 如果分散在多个组中，可以把它们都合并到第一个组里
-      targetGroupId = groupIds.values().next().value;
+    if (validGroupIds.size > 0) {
+      targetGroupId = validGroupIds.values().next().value;
     }
 
     const tabIds = tabList.map(t => t.id);
@@ -104,12 +115,13 @@ async function checkAndGroup(windowId) {
     }
   }
 
-  // 将没有被分组的标签页放到最下面（最右侧）
+  // 将没有被分组的标签页放到最下面（最右侧），并确保解除原生分组
   if (ungroupedTabIds.length > 0) {
     try {
+      await chrome.tabs.ungroup(ungroupedTabIds);
       await chrome.tabs.move(ungroupedTabIds, { index: -1 });
     } catch (e) {
-      console.error('Failed to move ungrouped tabs:', e);
+      console.error('Failed to ungroup/move tabs:', e);
     }
   }
 }
