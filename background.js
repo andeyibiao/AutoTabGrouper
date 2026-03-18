@@ -50,6 +50,8 @@ async function checkAndGroup(windowId) {
     domainToTabs.get(domain).push(tab);
   });
 
+  const processedGroups = [];
+
   // 遍历每个域名的标签页
   for (const [domain, tabList] of domainToTabs.entries()) {
     // 检查这些标签页是否已经在同一个组
@@ -88,6 +90,18 @@ async function checkAndGroup(windowId) {
       title: shortTitle,
       color: color
     });
+
+    processedGroups.push({ groupId: targetGroupId, title: shortTitle });
+  }
+
+  // 将所有分组按名称排序，并依次移动到末尾
+  processedGroups.sort((a, b) => a.title.localeCompare(b.title));
+  for (const group of processedGroups) {
+    try {
+      await chrome.tabGroups.move(group.groupId, { index: -1 });
+    } catch (e) {
+      console.error('Failed to move group:', e);
+    }
   }
 
   // 将没有被分组的标签页放到最下面（最右侧）
