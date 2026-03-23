@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>Auto Tab Grouper 操作</title>
+  <style>
+    body {
+      width: 240px;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      margin: 0;
+      background-color: #ffffff;
+      color: #333;
+    }
+    h3 {
+      margin-top: 0;
+      margin-bottom: 16px;
+      font-size: 15px;
+      color: #202124;
+      text-align: center;
+      font-weight: 600;
+    }
+    button {
+      width: 100%;
+      margin-bottom: 12px;
+      padding: 12px;
+      font-size: 14px;
+      color: #fff;
+      background-color: #1a73e8;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s, box-shadow 0.2s;
+      font-weight: 500;
+      box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
+    }
+    button:hover {
+      background-color: #1557b0;
+      box-shadow: 0 1px 3px 0 rgba(60,64,67,0.3), 0 4px 8px 3px rgba(60,64,67,0.15);
+    }
+    button:active {
+      background-color: #174ea6;
+      box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3);
+    }
+    button:last-child {
+      margin-bottom: 0;
+    }
+    button.danger {
+      background-color: #d93025;
+    }
+    button.danger:hover {
+      background-color: #b0120a;
+    }
+    button.danger:active {
+      background-color: #800e08;
+    }
+    small {
+      display: block;
+      margin-top: 6px;
+      font-size: 12px;
+      opacity: 0.9;
+      font-weight: 400;
+    }
+  </style>
+</head>
+<body>
+  <h3>分组快捷操作</h3>
+  <button id="ungroup-all">
+    解散所有分组
+    <small>(仅取消分组，保留标签页)</small>
+  </button>
+  <button id="close-all-groups" class="danger">
+    删除所有分组
+    <small>(关闭组内所有标签页)</small>
+  </button>
+
+  <script src="popup.js"></script>
+</body>
+</html>
