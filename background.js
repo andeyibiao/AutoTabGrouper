@@ -1,5 +1,8 @@
 const COLORS = ['grey', 'blue', 'red', 'yellow', 'green', 'pink', 'purple', 'cyan'];
 
+// 手动操作锁：当 popup 进行批量解散/删除操作时，暂停自动分组
+let manualOperationInProgress = false;
+
 // 提取标签页的友好域名（去掉协议和 www. 以便更好地归类）
 function getDomain(urlStr) {
   try {
@@ -26,6 +29,9 @@ function getColorForDomain(domain) {
 
 // 检查并分组
 async function checkAndGroup(windowId) {
+  // 如果正在进行手动操作，跳过自动分组
+  if (manualOperationInProgress) return;
+
   // 获取当前窗口中的所有普通标签页
   const tabs = await chrome.tabs.query({ windowId });
   
@@ -146,5 +152,16 @@ chrome.runtime.onInstalled.addListener(async () => {
   const windows = await chrome.windows.getAll({ populate: false });
   for (const win of windows) {
     await checkAndGroup(win.id);
+  }
+});
+
+// 监听来自 popup 的消息，控制手动操作锁
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === 'pause-auto-group') {
+    manualOperationInProgress = true;
+    sendResponse({ ok: true });
+  } else if (message.type === 'resume-auto-group') {
+    manualOperationInProgress = false;
+    sendResponse({ ok: true });
   }
 });
